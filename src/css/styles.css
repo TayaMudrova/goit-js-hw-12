@@ -28,13 +28,13 @@
 }
 
 .form-input {
-  padding-left: 16px;
   background-color: #fff;
   border: 1px solid #808080;
   border-radius: 4px;
   width: 272px;
   height: 40px;
   color: #2e2f42;
+  padding-left: 16px;
 }
 
 .form-input::placeholder {
