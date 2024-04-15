@@ -40,7 +40,7 @@ async function handelSubmit(event) {
     .then(data => {
       if (data.hits.length === 0) {
         form.reset();
-        // hideLoading(loader);
+        hideLoading(loader);
         return iziToast.error({
           message:
             'Sorry, there are no images matching your search query. Please try again!',
@@ -52,7 +52,7 @@ async function handelSubmit(event) {
       }
 
       form.reset();
-      // hideLoading(loader);
+      hideLoading(loader);
       gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
       lightbox.refresh();
       if (page < 500) {
