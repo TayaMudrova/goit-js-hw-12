@@ -11,7 +11,7 @@ export async function objectSearch(text, page) {
       image_type: 'photo',
       orientation: 'horizontal',
       safesearch: 'true',
-      page,
+      page: page,
       per_page: 15,
     },
   });
