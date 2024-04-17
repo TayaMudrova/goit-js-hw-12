@@ -68,7 +68,11 @@
 }
 
 .css-loader {
-  display: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 200px;
 }
 
 .loader {
