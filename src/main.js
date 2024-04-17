@@ -10,6 +10,7 @@ import { hideLoading } from './js/render-functions';
 const form = document.querySelector('.form');
 const loader = document.querySelector('.css-loader');
 const gallery = document.querySelector('.gallery');
+const loadBtn = document.querySelector('.load-more-btn');
 
 let page = 1;
 
@@ -25,7 +26,7 @@ async function handelSubmit(event) {
   if (dataSearch === '') {
     form.reset();
     loadBtn.classList.replace('load-more', 'btn-hidden');
-    return iziToast.error({
+    iziToast.error({
       message:
         'Sorry, there are no images matching your search query. Please try again!',
       position: 'bottomRight',
@@ -33,37 +34,15 @@ async function handelSubmit(event) {
       backgroundColor: 'red',
       progressBarColor: 'black',
     });
+    return;
   }
 
   showLoading(loader);
 
-  await objectSearch(dataSearch, page)
-    .then(data => {
-      if (data.hits.length === 0) {
-        form.reset();
-        hideLoading(loader);
-        return iziToast.error({
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-          position: 'bottomRight',
-          messageColor: 'white',
-          backgroundColor: 'red',
-          progressBarColor: 'black',
-        });
-      }
-
-      form.reset();
-      hideLoading(loader);
-      gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
-      lightbox.refresh();
-      if (page < 500) {
-        loadBtn.classList.replace('btn-hidden', 'load-more');
-      }
-      if (page >= 500) {
-        loadBtn.classList.replace('load-more', 'btn-hidden');
-      }
-    })
-    .catch(error => {
+  try {
+    const data = await objectSearch(dataSearch, page);
+    console.log(data);
+    if (data.hits.length === 0) {
       form.reset();
       iziToast.error({
         message:
@@ -73,12 +52,35 @@ async function handelSubmit(event) {
         backgroundColor: 'red',
         progressBarColor: 'black',
       });
-    })
-    .finally(() => {
-      hideLoading(loader);
+      return;
+    }
+
+    form.reset();
+    gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
+    lightbox.refresh();
+
+    const totalPages = Math.ceil(data.totalHits / 15);
+    if (page < totalPages) {
+      loadBtn.classList.replace('btn-hidden', 'load-more');
+    }
+    if (page >= totalPages) {
+      loadBtn.classList.replace('load-more', 'btn-hidden');
+    }
+  } catch (error) {
+    form.reset();
+    iziToast.error({
+      message:
+        'Sorry, there was an error while searching for images. Please try again!',
+      position: 'bottomRight',
+      messageColor: 'white',
+      backgroundColor: 'red',
+      progressBarColor: 'black',
     });
+  } finally {
+    hideLoading(loader);
+  }
 }
-const loadBtn = document.querySelector('.load-more-btn');
+
 loadBtn.addEventListener('click', loadMore);
 
 async function loadMore() {
@@ -86,18 +88,25 @@ async function loadMore() {
 
   try {
     const text = sessionStorage.getItem('text');
+    page += 1;
     const data = await objectSearch(text, page);
 
     gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
-    page += 1;
 
     loadBtn.disabled = false;
 
+    if (data.hits.length < 15) {
+      loadBtn.classList.add('btn-hidden');
+    }
+
+    lightbox.refresh();
+
     const item = document.querySelector('.gallery-item');
+    console.log(item);
     const itemHeight = item.getBoundingClientRect().height;
     window.scrollBy({
       left: 0,
-      top: itemHeight * 2,
+      top: itemHeight * 3,
       behavior: 'smooth',
     });
   } catch (error) {
