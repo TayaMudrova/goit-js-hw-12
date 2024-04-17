@@ -13,6 +13,7 @@ const gallery = document.querySelector('.gallery');
 const loadBtn = document.querySelector('.load-more-btn');
 
 let page = 1;
+hideLoading(loader);
 
 form.addEventListener('submit', handelSubmit);
 
