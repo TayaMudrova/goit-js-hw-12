@@ -24,6 +24,7 @@ async function handelSubmit(event) {
 
   if (dataSearch === '') {
     form.reset();
+    loadBtn.classList.replace('load-more', 'btn-hidden');
     return iziToast.error({
       message:
         'Sorry, there are no images matching your search query. Please try again!',
